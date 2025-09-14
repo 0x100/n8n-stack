@@ -2,7 +2,7 @@ name: Deploy n8n
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   deploy:
@@ -32,7 +32,7 @@ jobs:
           script: |
             set -e
             sudo mkdir -p /opt/n8n
-            sudo chown -R $USER:$USER /opt/n8n
+            sudo chown -R "$USER:$USER" /opt/n8n
             cd /opt/n8n
             cat > .env << 'EOF'
             DOMAIN=${{ secrets.DOMAIN }}
@@ -53,6 +53,15 @@ jobs:
           script: |
             set -e
             cd /opt/n8n
-            docker compose pull
-            docker compose up -d
-            docker compose ps
+            if docker compose version >/dev/null 2>&1; then
+              DC="docker compose"
+            elif command -v docker-compose >/dev/null 2>&1; then
+              DC="docker-compose"
+            else
+              sudo apt-get update -y
+              sudo apt-get install -y docker.io docker-compose-plugin
+              DC="docker compose"
+            fi
+            $DC pull
+            $DC up -d
+            $DC ps
