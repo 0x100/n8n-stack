@@ -7,16 +7,18 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Copy repo to server
+      - name: Copy repo to server (SCP)
         uses: appleboy/scp-action@v1.0.0
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: 22
           source: "."
           target: "/opt/n8n"
 
@@ -25,8 +27,12 @@ jobs:
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: 22
           script: |
+            set -e
+            sudo mkdir -p /opt/n8n
+            sudo chown -R $USER:$USER /opt/n8n
             cd /opt/n8n
             cat > .env << 'EOF'
             DOMAIN=${{ secrets.DOMAIN }}
@@ -42,8 +48,11 @@ jobs:
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
+          password: ${{ secrets.SSH_PASSWORD }}
+          port: 22
           script: |
+            set -e
             cd /opt/n8n
             docker compose pull
             docker compose up -d
+            docker compose ps
