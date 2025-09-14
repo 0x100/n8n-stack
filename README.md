@@ -3,6 +3,9 @@
 This repository provides a ready-to-use deployment of **n8n** with **Caddy** as a reverse proxy and automatic HTTPS certificates.  
 Deployment is automated through **GitHub Actions** and executed on a remote server.
 
+![Last Commit](https://img.shields.io/github/last-commit/0x100/n8n-stack)
+![Last Deploy](https://img.shields.io/github/actions/workflow/status/0x100/n8n-stack/deploy.yml)
+
 ---
 
 ## Overview
